@@ -4,16 +4,21 @@ import re
 from pathlib import Path
 
 
+
+
 #Call User Input
 webPage = input("Please Enter The URL Of Desired Site: ")
 date = input("Please enter the date of the records: ")
+
+
 
 
 status = False
 filePath = Path("./AthleticRecords.csv")
 if filePath.is_file():
     status = True
-print(status)
+print("File Exists: " + str(status))
+
 
 if (webPage == "https://oh.milesplit.com/meets/576849-ohio-capital-conference-central-2023/results/979142/formatted/?type=formatted&event="):
    
@@ -71,7 +76,7 @@ if (webPage == "https://oh.milesplit.com/meets/576849-ohio-capital-conference-ce
                 # This Method Runs Through The Unformatted List & Formats Each Record As Well As Add N/A For The Empty Records
                 for item in original:
                     if (item == ""):
-                       item = "N/A"
+                        item = "N/A"
                     formattedRecords.append(item)
 
 
@@ -99,13 +104,11 @@ if (webPage == "https://oh.milesplit.com/meets/576849-ohio-capital-conference-ce
 
         # Utilizes Previously Built Function
         entries = scrapeMilesOH(webPage)
-        coffmanEntries = []
-        coffmanEntries.clear()
         coffmanEntries = [entries[0]]
 
 
         # Runs Through All Entries & Selects The Entries Containing Dublin Coffman Students
-        for entry in entries:
+        for entry in entries[1:]:
             if any("Dub. Coffman" in cell for cell in entry) or any("Dublin Coffman" in cell for cell in entry):
                 coffmanEntries.append(entry)
        
@@ -116,17 +119,19 @@ if (webPage == "https://oh.milesplit.com/meets/576849-ohio-capital-conference-ce
             list = []
             finalList = []
             with open("AthleticRecords.csv", 'r') as file:
-              for row in file:
-                finalList.append(row)
-                list.append(row.strip())
+                for row in file:
+                    finalList.append(row)
+                    list.append(row.strip())
+
+
             indeces = []
 
 
             for record in list:
                 string = record
-                for item in coffmanEntries:
+                for item in coffmanEntries[1:]:
                     if (item[0] in string and "Time" not in string):
-                        string = string + ", " + item[len(item) - 1] + "\n"
+                        string = string + ", " + item[len(item) - 1]
                         coffmanEntries.remove(item)
                 if (string != record):
                     indeces.append(list.index(record))
@@ -136,13 +141,13 @@ if (webPage == "https://oh.milesplit.com/meets/576849-ohio-capital-conference-ce
             for x in range(len(finalList)):
                 for y in indeces:
                     if (x == y):
-                        finalList[x] = list[y]
+                        finalList[x] = list[y] + "\n"
 
 
-            if len(coffmanEntries) != 0:
-                for record in coffmanEntries:
+            if len(coffmanEntries) > 1:
+                for record in coffmanEntries[1:]:
                     String = str(record[0])
-                    for item in record:
+                    for item in record[1:]:
                         if (item == record[len(record) - 1]):
                             String = String + ", " + str(item) + "\n"
                         else:
@@ -154,7 +159,6 @@ if (webPage == "https://oh.milesplit.com/meets/576849-ohio-capital-conference-ce
            
         else:
             return coffmanEntries, False
-       
 
 
     #All Data Concerning Coffman Atheletes
@@ -193,22 +197,15 @@ if (webPage == "https://oh.milesplit.com/meets/576849-ohio-capital-conference-ce
 
 
         if (status == True):
-            headers = data[0]
-            records = data[1:]
-
-
             with open("AthleticRecords.csv", "w") as file:
-                pass
-            with open("AthleticRecords.csv", "w") as file:
-                file.write(headers)
-                for item in records:
+                for item in data:
                     file.write(item)
-
-
             print("Data has been updated to AthleticRecords.csv")
 
 
     exportToCSV(exportingData[0], "AthleticRecords.csv", exportingData[1])
+
+
 
 
 if (webPage == "https://www.athletic.net/CrossCountry/meet/251065/results/1003101"):
@@ -228,11 +225,11 @@ if (webPage == "https://www.athletic.net/CrossCountry/meet/251065/results/100310
 
 
     def scrapeAthleticNet(site):
-        # Initializes PlayWright       
+        # Initializes PlayWright      
         with sync_playwright() as play:
 
 
-            # Helps Launch The Browser Without The Need Of A GUI (Graphical User Interface)           
+            # Helps Launch The Browser Without The Need Of A GUI (Graphical User Interface)          
             browser = play.chromium.launch(headless = True)
 
 
@@ -240,7 +237,7 @@ if (webPage == "https://www.athletic.net/CrossCountry/meet/251065/results/100310
             page = browser.new_page()
 
 
-             # Accesses The Desired URL           
+            # Accesses The Desired URL          
             page.goto(site)
 
 
@@ -294,13 +291,11 @@ if (webPage == "https://www.athletic.net/CrossCountry/meet/251065/results/100310
 
         # Utilizes Previously Built Function
         entries = scrapeAthleticNet(webPage)
-        coffmanEntries = []
-        coffmanEntries.clear()
         coffmanEntries = [entries[0]]
 
 
         # Runs Through All Entries & Selects The Entries Containing Dublin Coffman Students
-        for entry in entries:
+        for entry in entries[1:]:
             if any("Dublin Coffman" in cell for cell in entry) or any("Dub. Coffman" in cell for cell in entry):
                 coffmanEntries.append(entry)
        
@@ -311,17 +306,19 @@ if (webPage == "https://www.athletic.net/CrossCountry/meet/251065/results/100310
             list = []
             finalList = []
             with open("AthleticRecords.csv", 'r') as file:
-              for row in file:
-                finalList.append(row)
-                list.append(row.strip())
+                for row in file:
+                    finalList.append(row)
+                    list.append(row.strip())
+
+
             indeces = []
 
 
             for record in list:
                 string = record
-                for item in coffmanEntries:
+                for item in coffmanEntries[1:]:
                     if (item[0] in string and "Time" not in string):
-                        string = string + ", " + item[len(item) - 1] + "\n"
+                        string = string + ", " + item[len(item) - 1]
                         coffmanEntries.remove(item)
 
 
@@ -333,14 +330,14 @@ if (webPage == "https://www.athletic.net/CrossCountry/meet/251065/results/100310
             for x in range(len(finalList)):
                 for y in indeces:
                     if (x == y):
-                        finalList[x] = list[y]
+                        finalList[x] = list[y] + "\n"
 
 
             coffmanEntries.pop(0)
             if len(coffmanEntries) != 0:
                 for record in coffmanEntries:
                     String = str(record[0])
-                    for item in record:
+                    for item in record[1:]:
                         if (item == record[len(record) - 1] and item not in String):
                             String = String + ", " + str(item) + "\n"
                         else:
@@ -352,17 +349,19 @@ if (webPage == "https://www.athletic.net/CrossCountry/meet/251065/results/100310
            
         else:
             return coffmanEntries, False
-   
-   # All Data Concerning Coffman Atheletes
+
+
+    #All Data Concerning Coffman Atheletes
     exportingData = coffmanExtracter()
 
 
+    # Transmits The Data To A CSV File
     def exportToCSV(data, fileName, status):
         if (status == False):
             # Organizing The Table Content
             headers = data[0]
             records = data[1:]
-            print(data)
+           
             fileN = fileName
             with open(fileN, "w") as file:
                 stringHe = headers[0]
@@ -384,23 +383,17 @@ if (webPage == "https://www.athletic.net/CrossCountry/meet/251065/results/100310
                     file.write(string)
            
             # Provides Confirmation To User of Success
-            print("Data has been saved to" + fileName)
+            print("Data has been saved to " + fileName)
 
 
         if (status == True):
-            headers = data[0]
-            records = data[1:]
-
-
             with open("AthleticRecords.csv", "w") as file:
-                pass
-            with open("AthleticRecords.csv", "w") as file:
-                file.write(headers)
-                for item in records:
+                for item in data:
                     file.write(item)
-
-
             print("Data has been updated to AthleticRecords.csv")
 
 
     exportToCSV(exportingData[0], "AthleticRecords.csv", exportingData[1])
+
+
+
